@@ -1,0 +1,31 @@
+RewriteEngine On
+RewriteBase /
+
+# Блокируем доступ к скрытым файлам (.git, .env и т.д.)
+RewriteRule (^\.|/\.) - [F]
+
+# Разрешаем прямой доступ к статическим файлам
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Все остальные запросы перенаправляем на index.php
+RewriteRule ^(.*)$ index.php [L,QSA]
+
+# Отключаем листинг директорий
+Options -Indexes
+Options -MultiViews
+
+# Защищаем системные файлы
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "\.(env|ini|log|sql|json|lock|bak|config|yml|yaml)$">
+    Require all denied
+</FilesMatch>
+
+# Разрешаем доступ к публичным файлам
+<FilesMatch "\.(jpg|jpeg|png|gif|ico|css|js|pdf|txt|woff|woff2|ttf|eot|svg)$">
+    Require all granted
+</FilesMatch>
